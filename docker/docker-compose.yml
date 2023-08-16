@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  mysqldb:
+    build:
+      context: ./
+      dockerfile: dbDockerfile
+    ports:
+      - 33060:3306
+    volumes:
+      - ./startup.sql:/docker-entrypoint-initdb.d/startup.sql
+    expose:
+      - "3306"
+      - "33060"
+    environment:
+      MYSQL_ROOT_PASSWORD: password123
+      MYSQL_ROOT_HOST: '%'
