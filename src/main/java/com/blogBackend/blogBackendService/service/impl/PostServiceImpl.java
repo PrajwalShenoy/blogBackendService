@@ -1,11 +1,14 @@
 package com.blogBackend.blogBackendService.service.impl;
 
+import com.blogBackend.blogBackendService.entity.Comment;
 import com.blogBackend.blogBackendService.entity.Post;
 import com.blogBackend.blogBackendService.exception.ResourceNotFoundException;
 import com.blogBackend.blogBackendService.payload.PostDto;
 import com.blogBackend.blogBackendService.payload.PostResponse;
+import com.blogBackend.blogBackendService.repository.CommentRepository;
 import com.blogBackend.blogBackendService.repository.PostRepository;
 import com.blogBackend.blogBackendService.service.PostService;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -13,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,9 +25,12 @@ public class PostServiceImpl implements PostService {
 
     private PostRepository postRepository;
 
+    private ModelMapper mapper;
+
     @Autowired
-    public PostServiceImpl(PostRepository postRepository) {
+    public PostServiceImpl(ModelMapper mapper, PostRepository postRepository) {
         this.postRepository = postRepository;
+        this.mapper = mapper;
     }
 
     @Override
@@ -47,7 +54,7 @@ public class PostServiceImpl implements PostService {
         postResponse.setPageNo(posts.getNumber());
         postResponse.setLast(posts.isLast());
         postResponse.setTotalElements(posts.getTotalElements());
-        postResponse.setTotalPages(postResponse.getTotalPages());
+        postResponse.setTotalPages(posts.getTotalPages());
         postResponse.setPageSize(posts.getSize());
         return postResponse;
     }
@@ -76,19 +83,22 @@ public class PostServiceImpl implements PostService {
     }
 
     private PostDto mapToDto(Post post) {
-        PostDto postDto = new PostDto();
-        postDto.setTitle(post.getTitle());
-        postDto.setId(post.getId());
-        postDto.setContent(post.getContent());
-        postDto.setDescription(post.getDescription());
-        return postDto;
+        return mapper.map(post, PostDto.class);
+//        PostDto postDto = new PostDto();
+//        postDto.setTitle(post.getTitle());
+//        postDto.setId(post.getId());
+//        postDto.setContent(post.getContent());
+//        postDto.setDescription(post.getDescription());
+////        postDto.setComments(post.getComments().stream().map());
+//        return postDto;
     }
 
     private Post mapToEntity(PostDto postDto) {
-        Post post = new Post();
-        post.setTitle(postDto.getTitle());
-        post.setDescription(postDto.getDescription());
-        post.setContent(postDto.getContent());
-        return post;
+        return mapper.map(postDto, Post.class);
+//        Post post = new Post();
+//        post.setTitle(postDto.getTitle());
+//        post.setDescription(postDto.getDescription());
+//        post.setContent(postDto.getContent());
+//        return post;
     }
 }
